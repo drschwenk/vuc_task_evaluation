@@ -3,38 +3,33 @@ import json
 import string
 from collections import defaultdict
 from collections import Counter
+from base_evaluator import BaseEvaluator
 
 
-class BaseEvaluator(object):
-    def __init__(self, data_path):
-        self.dataset = None
-        self.data_path = data_path
+class TqaEvaluator(BaseEvaluator):
 
-    def load_dataset(self, datafile):
-        with open(datafile, 'r') as f:
-            self.dataset = json.load(f)
-
-
-class Evaluator(BaseEvaluator):
-    def __init__(self, data_path):
-        super(Evaluator, self).__init__(data_path)
+    def __init__(self, data_path, submission_path):
+        super(TqaEvaluator, self).__init__(data_path, submission_path)
+        self.subtask_name = ''
         self.dataset = None
         self.sub_scores = ['overall', 'text', 'diagram', 'overall_text']
 
-    def evaluate_submission(self, predicted_answers):
-        if isinstance(predicted_answers, str):
-            with open(predicted_answers, 'r') as f:
-                predicted_answers = json.load(f)
-        if not self.dataset:
-            self.load_dataset(self.data_path)
-        assert not self.validate_answer_format(predicted_answers)
-        n_correct = self.count_correct(predicted_answers)
+    def load_groundtruth(self):
+        with open(self.data_path, 'r') as f:
+            self.dataset = json.load(f)
+
+    def evaluate_submission(self):
+        with open(self.submission_path, 'r') as f:
+            submission = json.load(f)
+        self.load_groundtruth()
+        assert not self.validate_answer_format(submission)
+        n_correct = self.count_correct(submission)
         n_total = Counter([qid.split('_')[0] for qid in self.dataset])
         n_total['overall'] = sum(n_total.values())
         overall_accuracy = n_correct['overall'] / n_total['overall']
         dq_accuracy = n_correct['DQ'] / n_total['DQ']
         ndq_accuracy = n_correct['NDQ'] / n_total['NDQ']
-        scores = {k: v for k, v in zip(self.sub_scores, [overall_accuracy, ndq_accuracy, dq_accuracy, ndq_accuracy])}
+        scores = [(k, v) for k, v in zip(self.sub_scores, [overall_accuracy, ndq_accuracy, dq_accuracy, ndq_accuracy])]
         return scores
 
     def count_correct(self, predicted_answers):

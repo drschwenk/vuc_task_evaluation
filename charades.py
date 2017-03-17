@@ -1,15 +1,15 @@
 from __future__ import division
 import numpy as np
 import pandas as pd
+from base_evaluator import BaseEvaluator
 
 
-class CharadesEvaluator(object):
+class CharadesEvaluator(BaseEvaluator):
     n_classes = 157
 
     def __init__(self, data_path, submission_path):
+        super(CharadesEvaluator, self).__init__(data_path, submission_path)
         self.submission_columns = ['frame_id']
-        self.data_path = data_path
-        self.submission_path = submission_path
         self.gt_labels = None
         self.vid_ids = None
         self.gt_array = None
