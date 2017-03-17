@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-from chooser import EvaluatorSelector
+from choose_evaluator import EvaluatorSelector
 
 
 def write_score_file(scores, out_path):

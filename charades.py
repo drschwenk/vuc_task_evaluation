@@ -42,9 +42,8 @@ class CharadesEvaluator(BaseEvaluator):
             t_pcs = np.cumsum(tp)
             prec = t_pcs / (f_pcs + t_pcs)
             avg_prec = 0
-            tmp = self.gt_array[:, oc_i][sorted_idxs]  # for faster lookup in the loop
             for i in range(self.submission_array.shape[0]):
-                if tmp[i] == 1:
+                if tp[i]:
                     avg_prec += prec[i]
             m_aps.append(avg_prec / n_pos)
         m_aps = np.array(m_aps)

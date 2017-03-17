@@ -13,6 +13,5 @@ class EvaluatorSelector(object):
             return ClassificationEvaluator(gt_file, submission_file)
         if 'tqa' in submission_file.lower():
             return TqaEvaluator(gt_file, submission_file)
-
-
-
+        if 'thor' in submission_file.lower():
+            return

@@ -10,7 +10,6 @@ class TqaEvaluator(BaseEvaluator):
 
     def __init__(self, data_path, submission_path):
         super(TqaEvaluator, self).__init__(data_path, submission_path)
-        self.subtask_name = ''
         self.dataset = None
         self.sub_scores = ['overall', 'text', 'diagram', 'overall_text']
 
@@ -35,14 +34,14 @@ class TqaEvaluator(BaseEvaluator):
     def count_correct(self, predicted_answers):
         correct = []
         for qid, ans in predicted_answers.items():
-            if ans == self.dataset[qid]:
+            if self.answered_correctly(ans, qid):
                 correct.append(qid.split('_')[0])
         correct_by_type = Counter(correct)
         correct_by_type['overall'] = sum(correct_by_type.values())
         return correct_by_type
 
-    def answered_correctly(self, gt_answers, q_id, submission_answer):
-        return submission_answer == gt_answers[q_id]
+    def answered_correctly(self, submission_answer, qid):
+        return submission_answer == self.dataset[qid]
 
     def validate_answer_format(self, predicted_answers):
         errors = defaultdict(list)
