@@ -1,6 +1,23 @@
 #!/usr/bin/env python
 import os
-from choose_evaluator import EvaluatorSelector
+# from choose_evaluator import EvaluatorSelector
+from .charades import LocalizationEvaluator
+from .charades import ClassificationEvaluator
+from .tqa import TqaEvaluator
+
+
+class EvaluatorSelector(object):
+
+    @classmethod
+    def get_submission_specific_evaluator(cls, submission_file, gt_file):
+        if 'loc' in submission_file.lower():
+            return LocalizationEvaluator(gt_file, submission_file)
+        if 'class' in submission_file.lower():
+            return ClassificationEvaluator(gt_file, submission_file)
+        if 'tqa' in submission_file.lower():
+            return TqaEvaluator(gt_file, submission_file)
+        if 'thor' in submission_file.lower():
+            return
 
 
 def write_score_file(scores, out_path):
