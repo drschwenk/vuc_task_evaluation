@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import os
-# from choose_evaluator import EvaluatorSelector
 from .charades import LocalizationEvaluator
 from .charades import ClassificationEvaluator
 from .tqa import TqaEvaluator

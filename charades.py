@@ -1,7 +1,7 @@
 from __future__ import division
 import numpy as np
 import pandas as pd
-from base_evaluator import BaseEvaluator
+from .base_evaluator import BaseEvaluator
 
 
 class CharadesEvaluator(BaseEvaluator):
@@ -26,7 +26,7 @@ class CharadesEvaluator(BaseEvaluator):
     def load_submission(self, submission_file):
         loc_submission = pd.read_csv(submission_file, header=None)
         build_proc_sub = loc_submission[0].str.split(' ').values.tolist()
-        proc_sub = pd.DataFrame.from_records(build_proc_sub, columns=[self.submission_columns + range(self.n_classes)])
+        proc_sub = pd.DataFrame.from_records(build_proc_sub, columns=[self.submission_columns + list(range(self.n_classes))])
         num_proc_sub = proc_sub.apply(pd.to_numeric, errors='ignore')
         grouped_by_vid = num_proc_sub
         self.submission = grouped_by_vid
