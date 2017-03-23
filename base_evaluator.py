@@ -12,12 +12,10 @@ class BaseEvaluator(object):
         print(*args, file=sys.stderr, **kwargs)
 
     def validate_submission(self, submission):
-        complete = self.check_complete(submission)
-        formatted = self.check_format(submission)
-        if not complete and not formatted:
-            passed_test_message = 'you passed'
-        else:
-            failed_test_message = 'you did not pass'
+        self.check_complete(submission)
+        self.check_format(submission)
+        # print('submission validated')
+        self.std_err_print('submission validated')
         return
 
     def check_complete(self, submission):

@@ -21,8 +21,7 @@ class TqaEvaluator(BaseEvaluator):
         with open(self.submission_path, 'r') as f:
             submission = json.load(f)
         self.load_groundtruth()
-        self.check_format(submission)
-        self.check_complete(submission)
+        self.validate_submission(submission)
         n_correct = self.count_correct(submission)
         n_total = Counter([qid.split('_')[0] for qid in self.dataset])
         n_total['overall'] = sum(n_total.values())

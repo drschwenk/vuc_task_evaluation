@@ -26,10 +26,23 @@ class CharadesEvaluator(BaseEvaluator):
     def load_submission(self, submission_file):
         loc_submission = pd.read_csv(submission_file, header=None)
         build_proc_sub = loc_submission[0].str.split(' ').values.tolist()
+        assert len(build_proc_sub[0]) == self.n_classes + len(self.submission_columns)
         proc_sub = pd.DataFrame.from_records(build_proc_sub, columns=[self.submission_columns + list(range(self.n_classes))])
         num_proc_sub = proc_sub.apply(pd.to_numeric, errors='ignore')
         grouped_by_vid = num_proc_sub
         self.submission = grouped_by_vid
+
+    def check_frame_count(self):
+        self.std_err_print(self.submission.columns)
+        assert self.submission.shape[0] == self.gt_array.shape[0]
+
+    def check_complete(self, submission):
+        self.check_frame_count()
+        gt_vids = set(self.vid_ids)
+        submitted_vids = set(submission['frame_id'].tolist())
+        vids_missing = gt_vids.difference(submitted_vids)
+        vids_extra = submitted_vids.difference(gt_vids)
+        assert not vids_missing and not vids_extra
 
     def compute_scores(self):
         m_aps = []
@@ -61,6 +74,7 @@ class CharadesEvaluator(BaseEvaluator):
         self.load_groundtruth()
         self.load_submission(self.submission_path)
         self.build_ground_truth_array()
+        self.validate_submission(self.submission)
         self.build_aligned_submission_array()
 
         mean_ap, weighted_ap = self.compute_scores()
@@ -79,6 +93,8 @@ class LocalizationEvaluator(CharadesEvaluator):
     @staticmethod
     def check_time_range(timepoints, start, stop):
         return start <= timepoints <= stop
+
+
 
     def build_gt_vectors(self, act_seq, vid_len, time_checker):
         frame_actions = np.zeros((self.n_frames, self.n_classes))
