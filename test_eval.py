@@ -49,16 +49,15 @@ def test_tqa_structural(evaluator, submission, gt_path, expected):
     (os.path.join(charades_base_path, 'charades_class_scrambled.txt'), charades_gt_path, 0.18614618839020669),
     ])
 def test_charades_submissions(evaluator, submission, gt_path, expected):
-    map = evaluator.evaluate_submission()
-    assert map[1] == expected
+    mean_ap = evaluator.evaluate_submission()
+    assert mean_ap[1] == expected
 
 
 @pytest.mark.parametrize("submission, gt_path, expected", [
-    # (os.path.join(charades_base_path, 'charades_loc_missing.txt'), charades_gt_path, AssertionError),
-    # (os.path.join(charades_base_path, 'charades_class_missing.txt'), charades_gt_path, AssertionError),
-    # (os.path.join(charades_base_path, 'charades_class_obj_class_missing.txt'), charades_gt_path, AssertionError),
-    # (os.path.join(charades_base_path, 'charades_loc_obj_class_missing.txt'), charades_gt_path, AssertionError),
-    (os.path.join(charades_base_path, 'charades_class_sample.txt'), charades_gt_path, ValueError),
+    (os.path.join(charades_base_path, 'charades_loc_missing.txt'), charades_gt_path, AssertionError),
+    (os.path.join(charades_base_path, 'charades_class_missing.txt'), charades_gt_path, AssertionError),
+    (os.path.join(charades_base_path, 'charades_class_obj_class_missing.txt'), charades_gt_path, AssertionError),
+    (os.path.join(charades_base_path, 'charades_loc_obj_class_missing.txt'), charades_gt_path, AssertionError),
     ])
 def test_charades_structural(evaluator, submission, gt_path, expected):
     with pytest.raises(expected):

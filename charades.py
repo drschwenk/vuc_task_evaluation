@@ -33,7 +33,6 @@ class CharadesEvaluator(BaseEvaluator):
         self.submission = grouped_by_vid
 
     def check_frame_count(self):
-        self.std_err_print(self.submission.columns)
         assert self.submission.shape[0] == self.gt_array.shape[0]
 
     def check_complete(self, submission):
@@ -93,8 +92,6 @@ class LocalizationEvaluator(CharadesEvaluator):
     @staticmethod
     def check_time_range(timepoints, start, stop):
         return start <= timepoints <= stop
-
-
 
     def build_gt_vectors(self, act_seq, vid_len, time_checker):
         frame_actions = np.zeros((self.n_frames, self.n_classes))
