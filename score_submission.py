@@ -34,9 +34,11 @@ def score(input_dir, output_dir):
     submission_files = os.listdir(submission_base_path)
     submissions = [os.path.join(submission_base_path, f) for f in submission_files]
     evaluators = [EvaluatorSelector.get_submission_specific_evaluator(f, gt_file) for f in submissions]
-    if len(evaluators) > 1:
-        submission_scores = dict(evaluator.evaluate_submission() for evaluator in evaluators if evaluator)
-    else:
+    if 'tqa' in gt_file:
         submission_scores = dict(evaluators[0].evaluate_submission())
-    write_score_file(submission_scores, output_dir)
+    else:
+        submission_scores = dict(evaluator.evaluate_submission() for evaluator in evaluators if evaluator)
+    scores_must_contain = evaluators[0].all_subtasks
+    all_submission_scores = {subtask: submission_scores.get(subtask, 0) for subtask in scores_must_contain}
+    write_score_file(all_submission_scores, output_dir)
 

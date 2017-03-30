@@ -11,7 +11,7 @@ class TqaEvaluator(BaseEvaluator):
     def __init__(self, data_path, submission_path):
         super(TqaEvaluator, self).__init__(data_path, submission_path)
         self.dataset = None
-        self.sub_scores = ['overall', 'text', 'diagram', 'overall_text']
+        self.all_subtasks = ['overall', 'text', 'diagram', 'overall_text']
 
     def load_groundtruth(self):
         with open(self.data_path, 'r') as f:
@@ -28,7 +28,7 @@ class TqaEvaluator(BaseEvaluator):
         overall_accuracy = n_correct['overall'] / n_total['overall']
         dq_accuracy = n_correct['DQ'] / n_total['DQ']
         ndq_accuracy = n_correct['NDQ'] / n_total['NDQ']
-        scores = [(k, v) for k, v in zip(self.sub_scores, [overall_accuracy, ndq_accuracy, dq_accuracy, ndq_accuracy])]
+        scores = zip(self.all_subtasks, [overall_accuracy, ndq_accuracy, dq_accuracy, ndq_accuracy])
         return scores
 
     def count_correct(self, predicted_answers):
@@ -60,7 +60,13 @@ class TqaEvaluator(BaseEvaluator):
     def check_complete(self, predicted_answers):
         errors = []
         all_dataset_questions = self.dataset
-        questions_missing = set(all_dataset_questions.keys()).difference(set(predicted_answers.keys()))
+        ndq_gt = set([qk for qk in all_dataset_questions.keys() if 'N' in qk])
+        ndq_sub = set([qk for qk in predicted_answers.keys() if 'N' in qk])
+        dq_sub = set([qk for qk in predicted_answers.keys() if 'N' not in qk])
+        if dq_sub:
+            questions_missing = set(all_dataset_questions.keys()).difference(set(predicted_answers.keys()))
+        else:
+            questions_missing = ndq_gt.difference(ndq_sub)
         questions_extra = set(predicted_answers.keys()).difference(set(all_dataset_questions.keys()))
         no_duplicate_questions = len(set(predicted_answers.keys())) == len(predicted_answers.keys())
         assert no_duplicate_questions
@@ -68,9 +74,6 @@ class TqaEvaluator(BaseEvaluator):
             self.std_err_print('***Warning***\n', 'unanswered questions detected')
         if questions_extra:
             self.std_err_print('***Warning***\n', 'extra questions detected')
-            # self.std_err_print('recording missing files in missing_qids.txt')
-            # with open('missing_qids.txt', 'w') as f:
-            #     f.write("\n".join(questions_missing))
         if errors:
             self.std_err_print('errors found ')
             for qid, error in errors.items():

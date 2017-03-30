@@ -16,6 +16,7 @@ class CharadesEvaluator(BaseEvaluator):
         self.submission = None
         self.submission_array = None
         self.subtask_name = None
+        self.all_subtasks = ['temporal_segmentation', 'action_recognition']
 
     def load_groundtruth(self):
         gt_labels = pd.read_csv(self.data_path)
