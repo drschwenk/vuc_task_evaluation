@@ -11,7 +11,7 @@ class TqaEvaluator(BaseEvaluator):
     def __init__(self, data_path, submission_path):
         super(TqaEvaluator, self).__init__(data_path, submission_path)
         self.dataset = None
-        self.all_subtasks = ['overall', 'text', 'diagram', 'overall_text']
+        self.all_subtasks = ['text', 'diagram']
 
     def load_groundtruth(self):
         with open(self.data_path, 'r') as f:
@@ -24,11 +24,9 @@ class TqaEvaluator(BaseEvaluator):
         self.validate_submission(submission)
         n_correct = self.count_correct(submission)
         n_total = Counter([qid.split('_')[0] for qid in self.dataset])
-        n_total['overall'] = sum(n_total.values())
-        overall_accuracy = n_correct['overall'] / n_total['overall']
         dq_accuracy = n_correct['DQ'] / n_total['DQ']
         ndq_accuracy = n_correct['NDQ'] / n_total['NDQ']
-        scores = zip(self.all_subtasks, [overall_accuracy, ndq_accuracy, dq_accuracy, ndq_accuracy])
+        scores = list(zip(self.all_subtasks, [ndq_accuracy, dq_accuracy]))
         return scores
 
     def count_correct(self, predicted_answers):
@@ -64,7 +62,7 @@ class TqaEvaluator(BaseEvaluator):
         ndq_sub = set([qk for qk in predicted_answers.keys() if 'N' in qk])
         dq_sub = set([qk for qk in predicted_answers.keys() if 'N' not in qk])
         if dq_sub:
-            questions_missing = set(all_dataset_questions.keys()).difference(set(predicted_answers.keys()))
+            questions_missing = dq_sub.difference(set(predicted_answers.keys()))
         else:
             questions_missing = ndq_gt.difference(ndq_sub)
         questions_extra = set(predicted_answers.keys()).difference(set(all_dataset_questions.keys()))
